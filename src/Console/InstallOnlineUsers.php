@@ -13,21 +13,25 @@ class InstallOnlineUsers extends Command
 
     public function handle()
     {
-        $this->info('Installing Online Users...');
+        $this->comment('Installing Online Users...');
 
-        $this->info('Publishing configuration...');
+        $this->comment('Publishing configuration...');
 
         if (! $this->configExists('onlineusers.php')) {
             $this->publishConfiguration();
             $this->info('Published configuration');
         } else {
             if ($this->shouldOverwriteConfig()) {
-                $this->info('Overwriting configuration file...');
+                $this->comment('Overwriting configuration file...');
                 $this->publishConfiguration($force = true);
             } else {
                 $this->info('Existing configuration was not overwritten');
             }
         }
+
+        // $this->comment('Publishing Migrations...');
+        // $this->publishMigrations($force = true);
+        // $this->info('Published Migrations');
 
 
         $this->info('Installed Online Users');
@@ -51,6 +55,19 @@ class InstallOnlineUsers extends Command
         $params = [
             '--provider' => "DevChahal\OnlineUsers\OnlineUsersServiceProvider",
             '--tag' => "config"
+        ];
+
+        if ($forcePublish === true) {
+            $params['--force'] = true;
+        }
+
+       $this->call('vendor:publish', $params);
+    }
+
+    private function publishMigrations($forcePublish = false){
+        $params = [
+            '--provider' => "DevChahal\OnlineUsers\OnlineUsersServiceProvider",
+            '--tag' => "migrations"
         ];
 
         if ($forcePublish === true) {
